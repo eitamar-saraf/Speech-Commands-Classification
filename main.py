@@ -1,66 +1,61 @@
-import torch.optim as optim
-
-from torch.autograd import Variable
+import torch
+from torch import optim
 import torch.nn as nn
 
+import matplotlib.pyplot as plt
+
+from const import Consts
 from data_handler.loaders import get_data_loaders
-from model import LeNet
+from model import LeNet, weight_init
+from train import train, evaluation, test_model
 
 
-def shit():
-    # defin hyperparameters
-    lr = 0.001
-    epochs = 8
+def plot_graphs(train_loss, val_loss, val_acc):
+    epochs = len(train_loss)
+    plt.plot(epochs, train_loss, 'g', label='Training loss')
+    plt.plot(epochs, val_loss, 'b', label='validation loss')
+    plt.plot(epochs, val_acc, 'r', label='validation accuracy')
 
-    output_size = 30
-    model = LeNet(output_size)
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    plt.title('Training and Validation loss')
+    plt.legend()
 
-    for epoch in range(epochs):
+    plt.ylabel('loss')
+    plt.xlabel('epochs')
 
-        # move on the train
-        model.train()
-        for batch_idx, (input, label) in enumerate(train_loader):
-            optimizer.zero_grad()
-            output = model(Variable(input))
-            loss = nn.functional.nll_loss(output, Variable(label))
-            loss.backward()
-            optimizer.step()
-
-        # move on the validation
-        model.eval()
-
-        correct = 0
-        for data, target in valid_loader:
-            output = model(Variable(data, volatile=True))
-            target = Variable(target)
-            y_hat = output.data.max(1, keepdim=True)[1]
-
-    # move on the test
-    fout = open('test_y', 'w')
-    model.eval()
-    file_ind = 0
-    files = test_dataset.files
-    for data, target in test_loader:
-        output = model(Variable(data, volatile=True))
-        y_hat = output.data.max(1, keepdim=True)[1]
-        list_y_hat = y_hat.tolist()
-        for i in range(len(list_y_hat)):
-            fout.write(str(files[file_ind]) + ", " + str(list_y_hat[i][0]) + '\n')
-            file_ind += 1
-
-    fout.close()
+    plt.show()
+    plt.imsave('graph/loss.png')
 
 
-def main():
+def main(device):
     train_loader, valid_loader, test_loader = get_data_loaders()
-    for epoch in range(epochs):
-        train_loss = train(train_loader)
-        val_loss, val_acc = evaluation(valid_loader)
-    test_acc = test(test_loader)
-    plot_graphs(train_loss, val_loss, val_acc, test_acc)
 
+    model = LeNet(35)
+    optimizer = optim.Adam(model.parameters(), lr=Consts.lr)
+    loss_criterion = nn.NLLLoss()
+    model.apply(weight_init)
+    model.to(device)
+    train_loss = []
+    val_loss = []
+    val_acc = []
+    for epoch in range(Consts.epochs):
+        t_loss = train(model, train_loader, optimizer, loss_criterion, device)
+        v_loss, v_acc = evaluation(model, valid_loader, loss_criterion, device)
+        torch.save(model.state_dict(), f'models/epoch-{epoch + 1}.pth')
+        train_loss.append(t_loss)
+        val_loss.append(v_loss)
+        val_acc.append(v_acc)
+        print(f'train loss in epoch {epoch + 1} is: {t_loss}')
+        print(f'validation loss in epoch {epoch + 1} is: {v_loss}')
+        print(f'validation accuracy in epoch {epoch + 1} is: {v_acc}')
+
+    plot_graphs(train_loss, val_loss, val_acc)
+
+    test_model(model, test_loader, loss_criterion, val_loss, device)
 
 
 if __name__ == "__main__":
-    main()
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+    else:
+        device = torch.device('cpu')
+    main(device)
