@@ -1,3 +1,6 @@
+import os
+
+import rootpath
 import torch
 from torch import optim
 import torch.nn as nn
@@ -27,7 +30,9 @@ def plot_graphs(train_loss, val_loss, val_acc):
 
 
 def main(device):
-    train_loader, valid_loader, test_loader = get_data_loaders()
+    path = rootpath.detect()
+    path = os.path.join(path, 'dataset/')
+    train_loader, valid_loader, test_loader = get_data_loaders(path)
 
     model = LeNet(35)
     optimizer = optim.Adam(model.parameters(), lr=Consts.lr)

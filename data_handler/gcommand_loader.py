@@ -10,6 +10,14 @@ AUDIO_EXTENSIONS = [
     '.wav', '.WAV',
 ]
 
+NPY_EXTENSIONS = [
+    '.npy'
+]
+
+
+def is_npy_file(filename):
+    return any(filename.endswith(extension) for extension in NPY_EXTENSIONS)
+
 
 def is_audio_file(filename):
     return any(filename.endswith(extension) for extension in AUDIO_EXTENSIONS)
@@ -22,7 +30,7 @@ def find_classes(dir):
     return classes, class_to_idx
 
 
-def make_dataset(dir, class_to_idx):
+def make_dataset(dir, class_to_idx, audio):
     spects = []
     dir = os.path.expanduser(dir)
     for target in sorted(os.listdir(dir)):
@@ -32,14 +40,20 @@ def make_dataset(dir, class_to_idx):
 
         for root, _, fnames in sorted(os.walk(d)):
             for fname in sorted(fnames):
-                if is_audio_file(fname):
-                    path = os.path.join(root, fname)
-                    item = (path, class_to_idx[target])
-                    spects.append(item)
+                if audio:
+                    if is_audio_file(fname):
+                        path = os.path.join(root, fname)
+                        item = (path, class_to_idx[target])
+                        spects.append(item)
+                else:
+                    if is_npy_file(fname):
+                        path = os.path.join(root, fname)
+                        item = (path, class_to_idx[target])
+                        spects.append(item)
     return spects
 
 
-def make_dataset_test(dir):
+def make_dataset_test(dir, audio):
     spects = []
     files = []
     dir = os.path.expanduser(dir)
@@ -48,12 +62,24 @@ def make_dataset_test(dir):
 
     for root, _, fnames in sorted(os.walk(d)):
         for fname in sorted(fnames):
-            if is_audio_file(fname):
-                files.append(fname)
-                path = os.path.join(root, fname)
-                item = (path, 0)
-                spects.append(item)
+            if audio:
+                if is_audio_file(fname):
+                    files.append(fname)
+                    path = os.path.join(root, fname)
+                    item = (path, 0)
+                    spects.append(item)
+            else:
+                if is_npy_file(fname):
+                    files.append(fname)
+                    path = os.path.join(root, fname)
+                    item = (path, 0)
+                    spects.append(item)
     return spects, files
+
+
+def npy_loader(path):
+    spect = np.load(path)
+    return spect
 
 
 def spect_loader(path, window_size, window_stride, window, normalize, max_len=101):
@@ -64,7 +90,7 @@ def spect_loader(path, window_size, window_stride, window, normalize, max_len=10
     hop_length = int(sr * window_stride)
 
     # STFT
-    
+
     D = librosa.stft(y, n_fft=n_fft, hop_length=hop_length,
                      win_length=win_length, window=window)
     spect, phase = librosa.magphase(D)
@@ -120,13 +146,13 @@ class GCommandLoader(data.Dataset):
     """
 
     def __init__(self, root, transform=None, target_transform=None, window_size=.02,
-                 window_stride=.01, window_type='hamming', normalize=True, max_len=101, is_test=False):
+                 window_stride=.01, window_type='hamming', normalize=True, max_len=101, is_test=False, audio=True):
         if not is_test:
             classes, class_to_idx = find_classes(root)
-            spects = make_dataset(root, class_to_idx)
+            spects = make_dataset(root, class_to_idx, audio)
         else:
             classes, class_to_idx = list(), dict()
-            spects, files = make_dataset_test(root)
+            spects, files = make_dataset_test(root, audio)
             self.files = files
         if len(spects) == 0:
             raise (RuntimeError(
@@ -139,12 +165,12 @@ class GCommandLoader(data.Dataset):
         self.class_to_idx = class_to_idx
         self.transform = transform
         self.target_transform = target_transform
-        self.loader = spect_loader
         self.window_size = window_size
         self.window_stride = window_stride
         self.window_type = window_type
         self.normalize = normalize
         self.max_len = max_len
+        self.audio = audio
 
     def __getitem__(self, index):
         """
@@ -154,13 +180,17 @@ class GCommandLoader(data.Dataset):
             tuple: (spect, target) where target is class_index of the target class.
         """
         path, target = self.spects[index]
-        spect = self.loader(path, self.window_size, self.window_stride, self.window_type, self.normalize, self.max_len)
+        if self.audio:
+            spect = spect_loader(path, self.window_size, self.window_stride, self.window_type, self.normalize,
+                                 self.max_len)
+        else:
+            spect = npy_loader(path)
         if self.transform is not None:
             spect = self.transform(spect)
         if self.target_transform is not None:
             target = self.target_transform(target)
 
-        return spect, target
+        return spect, target, path
 
     def __len__(self):
         return len(self.spects)
