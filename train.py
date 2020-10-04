@@ -9,18 +9,18 @@ def evaluation(model, loader, loss_criterion, device):
     model.eval()
     with torch.no_grad():
         for batch_index, batch in enumerate(loader):
-            batch_x = batch[0]
-            batch_y = batch[1]
+          batch_x = batch[0]
+          batch_y = batch[1]
 
-            batch_x = batch_x.to(device, dtype=torch.float32)
-            batch_y = batch_y.to(device, dtype=torch.float32)
+          batch_x = batch_x.to(device, dtype=torch.float32)
+          batch_y = batch_y.to(device, dtype=torch.long)
 
-            pred = model(batch_x)
-            loss = loss_criterion(pred, batch_y.type(torch.LongTensor))
-            pred = pred.data.max(1, keepdims=True)[1]
-            correct += pred.eq(batch_y.data.view_as(pred)).cpu().sum()
+          pred = model(batch_x)
+          loss = loss_criterion(pred, batch_y)
+          pred = pred.data.max(1, keepdims=True)[1]
+          correct += pred.eq(batch_y.data.view_as(pred)).cpu().sum()
 
-            m_loss += loss.item()
+          m_loss += loss.item()
 
         m_loss = m_loss / len(loader)
         correct = correct / len(loader.dataset)
@@ -38,20 +38,17 @@ def train(model, train_loader, optimizer, loss_criterion, device):
         for batch_index, batch in enumerate(train_loader):
             batch_x = batch[0]
             batch_y = batch[1]
-
             batch_x = batch_x.to(device, dtype=torch.float32)
-            batch_y = batch_y.to(device, dtype=torch.float32)
-
+            batch_y = batch_y.to(device, dtype=torch.long)
             pred = model(batch_x)
-            loss = loss_criterion(pred, batch_y.type(torch.LongTensor))
-
+            loss = loss_criterion(pred, batch_y)
             m_loss += loss.item()
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            pbar.update(len(batch_x))
+            pbar.update(1)
 
         m_loss = m_loss / len(train_loader)
     return m_loss
