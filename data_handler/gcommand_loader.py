@@ -64,6 +64,7 @@ def spect_loader(path, window_size, window_stride, window, normalize, max_len=10
     hop_length = int(sr * window_stride)
 
     # STFT
+    
     D = librosa.stft(y, n_fft=n_fft, hop_length=hop_length,
                      win_length=win_length, window=window)
     spect, phase = librosa.magphase(D)
