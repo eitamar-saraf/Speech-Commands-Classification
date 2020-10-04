@@ -12,6 +12,8 @@ def transform_dataset(loader):
         x = x.numpy()
         new_path = path.replace('wav', 'npy')
         np.save(new_path, x)
+        os.remove(path)
+
 
 
 def transform():
