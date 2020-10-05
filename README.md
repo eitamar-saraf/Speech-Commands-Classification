@@ -34,5 +34,9 @@ Just run:
  
 * ```python main.py train --dataset <path-to-dataset-folder>```
 
+## Testing
+*  ```python main.py test --test_dataset <path-to-test-folder> --model <path-to-model>``` 
+
+
 ## Results
 To be Continue...
