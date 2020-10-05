@@ -36,7 +36,7 @@ def main(device):
     train_loader, valid_loader, test_loader = get_data_loaders(path)
 
     model = LeNet(35)
-    optimizer = optim.Adam(model.parameters(), lr=Consts.lr)
+    optimizer = optim.Adam(model.parameters(), lr=Consts.lr, weight_decay=1e-6)
     loss_criterion = nn.NLLLoss()
     model.apply(weight_init)
     model.to(device)
@@ -55,8 +55,7 @@ def main(device):
         print(f'validation accuracy in epoch {epoch + 1} is: {v_acc}')
 
     plot_graphs(train_loss, val_loss, val_acc)
-
-    test_model(model, test_loader, loss_criterion, val_loss, device)
+    test_model(model, test_loader, loss_criterion, val_loss, device, 'models/')
 
 
 if __name__ == "__main__":
