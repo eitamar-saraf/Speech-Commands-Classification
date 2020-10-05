@@ -17,8 +17,9 @@ def transform_dataset(loader):
 
 
 def transform():
-    path = rootpath.detect()
-    path = os.path.join(path, 'dataset/')
+    # path = rootpath.detect()
+    # path = os.path.join(path, 'dataset/')
+    path = '/content/dataset/'
     train_loader, valid_loader, test_loader = get_datasets(path)
     transform_dataset(train_loader)
     transform_dataset(valid_loader)

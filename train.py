@@ -19,11 +19,10 @@ def evaluation(model, loader, loss_criterion, device):
           loss = loss_criterion(pred, batch_y)
           pred = pred.data.max(1, keepdims=True)[1]
           correct += pred.eq(batch_y.data.view_as(pred)).cpu().sum()
-
           m_loss += loss.item()
 
         m_loss = m_loss / len(loader)
-        correct = correct / len(loader.dataset)
+        correct = correct.item() / len(loader.dataset)
 
         return m_loss, correct
 
@@ -54,9 +53,9 @@ def train(model, train_loader, optimizer, loss_criterion, device):
     return m_loss
 
 
-def test_model(model, test_loader, loss_criterion, val_loss, device):
+def test_model(model, test_loader, loss_criterion, val_loss, device, path):
     best_model_index = np.argmin(val_loss)
-    model.load_state_dict(torch.load(f'models/epoch-{best_model_index}.pth'))
+    model.load_state_dict(torch.load(f'{path}epoch-{best_model_index}.pth'))
 
     test_loss, test_acc = evaluation(model, test_loader, loss_criterion, device)
     print(f'test accuracy is: {test_acc}')
