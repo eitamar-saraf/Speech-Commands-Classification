@@ -1,6 +1,5 @@
 import os
 import shutil
-import argparse
 
 
 def move_files(original_fold, data_fold, data_filename):
@@ -46,12 +45,3 @@ def make_dataset(gcommands_fold, out_path):
     move_files(gcommands_fold, test_fold, test_path)
     move_files(gcommands_fold, valid_fold, validation_path)
     create_train_fold(gcommands_fold, train_fold, test_fold)
-
-
-parser = argparse.ArgumentParser(description='Make google commands dataset.')
-parser.add_argument('gcommads_fold', help='the path to the root folder of te google commands dataset.')
-parser.add_argument('--out_path', default='gcommands', help='the path where to save the files splitted to folders.')
-
-if __name__ == '__main__':
-    args = parser.parse_args()
-    make_dataset(args.gcommads_fold, args.out_path)
