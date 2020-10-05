@@ -1,4 +1,4 @@
 class Consts:
-    lr = 0.001
-    batch_size = 32
+    lr = 0.0005
+    batch_size = 64
     epochs = 10
