@@ -39,4 +39,11 @@ Just run:
 
 
 ## Results
-To be Continue...
+| Train acc. | Valid acc. | Test acc.|
+| ------------- | ------------- | ------------- |
+| 99%   | 89% | 88% | 
+
+you can see them in the notebook
+
+## Loss && Validation Accuracy Graph
+![loss](/graphs/loss%20and%20accuracy.png)
