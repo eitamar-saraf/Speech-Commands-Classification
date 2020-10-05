@@ -88,7 +88,7 @@ def train(model, train_loader, optimizer, loss_criterion, device):
 def test_model(model, test_loader, loss_criterion, val_loss, device, path=None):
     if path:
         best_model_index = np.argmin(val_loss)
-        model.load_state_dict(torch.load(f'{path}epoch-{best_model_index}.pth'))
+        model.load_state_dict(torch.load(f'{path}epoch-{best_model_index+1}.pth'))
 
     test_loss, test_acc = evaluation(model, test_loader, loss_criterion, device)
     print(f'test accuracy is: {test_acc}')
@@ -103,4 +103,5 @@ def test(device, test_dataset_path, model_path):
         model.load_state_dict(torch.load(model_path, map_location=device))
     else:
         model.load_state_dict(torch.load(model_path))
+    model.to(device)
     test_model(model, test_loader, loss_criterion, [], device, None)
