@@ -1,17 +1,19 @@
 from torch import nn
 
+from const import Consts
+
 
 class LeNet(nn.Module):
     def __init__(self, output_size):
         super(LeNet, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, kernel_size=5)  # (32, 158, 98)
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3)  # (32, 159, 99)
         self.batch_norm1 = nn.BatchNorm2d(32)
         self.max_pool1 = nn.MaxPool2d(kernel_size=2)  # (32, 79, 49)
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3)  # (64, 78, 48)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3)  # (64, 77, 47)
         self.batch_norm2 = nn.BatchNorm2d(64)
         self.max_pool2 = nn.MaxPool2d(kernel_size=2)  # (64, 38, 23)
         self.fc1 = nn.Linear(55936, 1000)
-        self.dropout = nn.Dropout(0.25)
+        self.dropout = nn.Dropout(Consts.dropout)
         self.fc2 = nn.Linear(1000, output_size)
         self.activation = nn.ReLU()
 
@@ -31,5 +33,5 @@ class LeNet(nn.Module):
 
 
 def weight_init(m):
-    if isinstance(m, nn.Conv2d):
+    if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
         nn.init.kaiming_normal_(m.weight)
