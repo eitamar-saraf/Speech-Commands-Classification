@@ -4,7 +4,7 @@ from torch import optim
 from tqdm import tqdm
 
 from const import Consts
-from data_handling.loaders import get_data_loaders
+from data_handling.loaders import get_data_loaders, get_test_loader
 from model import LeNet, weight_init
 from utils import plot_graphs
 
@@ -54,6 +54,7 @@ def evaluation(model, loader, loss_criterion, device):
             m_loss += loss.item()
 
         m_loss = m_loss / len(loader)
+        print(correct)
         correct = correct.item() / len(loader.dataset)
 
         return m_loss, correct
@@ -85,9 +86,21 @@ def train(model, train_loader, optimizer, loss_criterion, device):
     return m_loss
 
 
-def test_model(model, test_loader, loss_criterion, val_loss, device, path):
-    best_model_index = np.argmin(val_loss)
-    model.load_state_dict(torch.load(f'{path}epoch-{best_model_index}.pth'))
+def test_model(model, test_loader, loss_criterion, val_loss, device, path=None):
+    if path:
+        best_model_index = np.argmin(val_loss)
+        model.load_state_dict(torch.load(f'{path}epoch-{best_model_index}.pth'))
 
     test_loss, test_acc = evaluation(model, test_loader, loss_criterion, device)
     print(f'test accuracy is: {test_acc}')
+
+
+def test(device, test_dataset_path, model_path):
+    test_loader = get_test_loader(test_dataset_path)
+    loss_criterion = torch.nn.NLLLoss()
+    model = LeNet(35)
+    if device.type == 'cpu':
+        model.load_state_dict(torch.load(model_path, map_location=device))
+    else:
+        model.load_state_dict(torch.load(model_path))
+    test_model(model, test_loader, loss_criterion, [], device, None)
