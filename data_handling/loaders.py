@@ -30,3 +30,10 @@ def get_datasets(path=None):
     test_loader = GCommandLoader(os.path.join(path, 'test'))
     return train_dataset, valid_dataset, test_loader
 
+
+def get_test_loader(path=None):
+    test_dataset = GCommandLoader(path, is_test=True, audio=False)
+    test_loader = DataLoader(
+        test_dataset, batch_size=Consts.batch_size, shuffle=True, num_workers=2,
+        pin_memory=True)
+    return test_loader
