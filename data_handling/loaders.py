@@ -17,7 +17,7 @@ def get_data_loaders(path=None):
     valid_loader = DataLoader(
         valid_dataset, batch_size=Consts.batch_size, shuffle=True, num_workers=2,
         pin_memory=True)
-    test_dataset = GCommandLoader(path + 'test', is_test=True, audio=False)
+    test_dataset = GCommandLoader(path + 'test', audio=False)
     test_loader = DataLoader(
         test_dataset, batch_size=Consts.batch_size, shuffle=True, num_workers=2,
         pin_memory=True)
@@ -32,7 +32,7 @@ def get_datasets(path=None):
 
 
 def get_test_loader(path=None):
-    test_dataset = GCommandLoader(path, is_test=True, audio=False)
+    test_dataset = GCommandLoader(path, audio=False)
     test_loader = DataLoader(
         test_dataset, batch_size=Consts.batch_size, shuffle=True, num_workers=2,
         pin_memory=True)

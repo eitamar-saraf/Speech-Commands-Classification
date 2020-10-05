@@ -146,14 +146,11 @@ class GCommandLoader(data.Dataset):
     """
 
     def __init__(self, root, transform=None, target_transform=None, window_size=.02,
-                 window_stride=.01, window_type='hamming', normalize=True, max_len=101, is_test=False, audio=True):
-        if not is_test:
-            classes, class_to_idx = find_classes(root)
-            spects = make_dataset(root, class_to_idx, audio)
-        else:
-            classes, class_to_idx = list(), dict()
-            spects, files = make_dataset_test(root, audio)
-            self.files = files
+                 window_stride=.01, window_type='hamming', normalize=True, max_len=101, audio=True):
+
+        classes, class_to_idx = find_classes(root)
+        spects = make_dataset(root, class_to_idx, audio)
+
         if len(spects) == 0:
             raise (RuntimeError(
                 "Found 0 sound files in subfolders of: " + root + "Supported audio file extensions are: " + ",".join(
