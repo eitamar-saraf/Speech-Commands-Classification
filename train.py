@@ -6,7 +6,7 @@ from tqdm import tqdm
 from const import Consts
 from data_handling.loaders import get_data_loaders, get_test_loader
 from model import LeNet, weight_init
-from utils import plot_graphs
+from utils import plot_loss
 
 
 def train_lenet(device, dataset_path):
@@ -31,8 +31,8 @@ def train_lenet(device, dataset_path):
         print(f'validation loss in epoch {epoch + 1} is: {v_loss}')
         print(f'validation accuracy in epoch {epoch + 1} is: {v_acc}')
 
-    plot_graphs(train_loss, val_loss, val_acc)
-    test_model(model, test_loader, loss_criterion, val_loss, device, 'models/')
+    plot_loss(train_loss, val_loss, val_acc)
+    test_loss, test_acc = test_model(model, test_loader, loss_criterion, val_loss, device, 'models/')
 
 
 def evaluation(model, loader, loss_criterion, device):
@@ -54,7 +54,6 @@ def evaluation(model, loader, loss_criterion, device):
             m_loss += loss.item()
 
         m_loss = m_loss / len(loader)
-        print(correct)
         correct = correct.item() / len(loader.dataset)
 
         return m_loss, correct
@@ -93,6 +92,7 @@ def test_model(model, test_loader, loss_criterion, val_loss, device, path=None):
 
     test_loss, test_acc = evaluation(model, test_loader, loss_criterion, device)
     print(f'test accuracy is: {test_acc}')
+    return test_loss, test_acc
 
 
 def test(device, test_dataset_path, model_path):
