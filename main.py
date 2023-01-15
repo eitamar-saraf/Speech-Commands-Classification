@@ -1,13 +1,13 @@
 import argparse
 from pathlib import Path
 import sys
+import logging
 
 from data_handling.create_dataset import make_dataset
 from data_handling.transform_dataset import transform_dataset
 from train import train_lenet, test
 from utils import get_device
 
-import logging
 
 logging.basicConfig(format='%(asctime)s, %(levelname)s:, %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
                     stream=sys.stdout, level=logging.DEBUG)
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parser that controls the script.')
 
     parser.add_argument('--action', help='the action that the script should do.',
-                        choices=['train', 'test', 'create_dataset', 'transform_dataset'], default='create_dataset')
+                        choices=['train', 'test', 'create_dataset', 'transform_dataset'], default='transform_dataset')
     parser.add_argument('--speech_commands_folder',
                         help='the path to the root folder of te google commands dataset before splitting.',
                         default=r'dataset/raw')
@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     elif args.action == 'transform_dataset':
         logger.info('Transforming dataset')
-        transform_dataset(args.dataset)
+        transform_dataset(Path(args.dataset))
 
     elif args.action == 'train':
         logger.info('Training model')

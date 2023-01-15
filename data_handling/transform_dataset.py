@@ -1,8 +1,11 @@
 import os
-
+from pathlib import Path
+import logging
 import numpy as np
 
-from data_handling.loaders import get_datasets
+from data_handling.gcommand_loader import GCommandLoader
+
+logger = logging.getLogger(__name__)
 
 
 def transform_loader(loader):
@@ -13,8 +16,10 @@ def transform_loader(loader):
         os.remove(path)
 
 
-def transform_dataset(dataset_path):
-    train_loader, valid_loader, test_loader = get_datasets(dataset_path)
-    transform_loader(train_loader)
-    transform_loader(valid_loader)
-    transform_loader(test_loader)
+def transform_dataset(dataset_path: Path) -> None:
+    for folder in dataset_path.iterdir():
+        if folder.is_dir():
+            logger.info(f'Transforming {folder.name} into spectrograms')
+
+            dataset_loader = GCommandLoader(folder)
+            transform_loader(dataset_loader)
