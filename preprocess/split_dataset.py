@@ -31,7 +31,7 @@ def create_train_fold(original_fold: Path, data_fold: Path, test_fold: Path) -> 
             shutil.move(folder, data_fold.joinpath(folder.name))
 
 
-def make_dataset(speech_commands_folder: Path, out_path: Path) -> None:
+def split_dataset(speech_commands_folder: Path, out_path: Path) -> None:
     validation_path = speech_commands_folder.joinpath('validation_list.txt')
     test_path = speech_commands_folder.joinpath('testing_list.txt')
 

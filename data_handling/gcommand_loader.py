@@ -98,13 +98,13 @@ class GCommandLoader(data.Dataset):
             target and transforms it.
         window_size: window size for the stft, default value is .02
         window_stride: window stride for the stft, default value is .01
-        window_type: typye of window to extract the stft, default value is 'hamming'
-        normalize: boolean, whether or not to normalize the spect to have zero mean and one std
+        window_type: type of window to extract the stft, default value is 'hamming'
+        normalize: boolean, whether to normalize the spect to have zero mean and one std
         max_len: the maximum length of frames to use
      Attributes:
         classes (list): List of the class names.
         class_to_idx (dict): Dict with items (class_name, class_index).
-        spects (list): List of (spects path, class_index) tuples
+        spectrogram (list): List of (spectrogram path, class_index) tuples
         STFT parameter: window_size, window_stride, window_type, normalize
     """
 
@@ -112,15 +112,15 @@ class GCommandLoader(data.Dataset):
                  window_stride=.01, window_type='hamming', normalize=True, max_len=101, audio=True):
 
         classes, class_to_idx = find_classes(root)
-        spects = make_dataset(root, class_to_idx, audio)
+        spectrogram = make_dataset(root, class_to_idx, audio)
 
-        if len(spects) == 0:
+        if len(spectrogram) == 0:
             raise (RuntimeError(
                 "Found 0 sound files in subfolders of: " + str(root) + "Supported audio file extensions are: " + ",".join(
                     AUDIO_EXTENSIONS)))
 
         self.root = root
-        self.spects = spects
+        self.spectrogram = spectrogram
         self.classes = classes
         self.class_to_idx = class_to_idx
         self.transform = transform
@@ -139,7 +139,7 @@ class GCommandLoader(data.Dataset):
         Returns:
             tuple: (spect, target) where target is class_index of the target class.
         """
-        path, target = self.spects[index]
+        path, target = self.spectrogram[index]
         if self.audio:
             spect = self.__spect_loader(path)
         else:
@@ -152,7 +152,7 @@ class GCommandLoader(data.Dataset):
         return spect, target, path
 
     def __len__(self):
-        return len(self.spects)
+        return len(self.spectrogram)
 
     def __spect_loader(self, path):
         y, sr = librosa.load(path, sr=None)

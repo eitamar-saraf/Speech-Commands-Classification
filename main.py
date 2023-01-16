@@ -3,8 +3,8 @@ from pathlib import Path
 import sys
 import logging
 
-from data_handling.create_dataset import make_dataset
-from data_handling.transform_dataset import transform_dataset
+from preprocess.split_dataset import split_dataset
+from preprocess.transform_dataset import transform_dataset
 from train import train_lenet, test
 from utils import get_device
 
@@ -33,11 +33,11 @@ if __name__ == "__main__":
 
     if args.action == 'create_dataset':
         logger.info('Creating dataset')
-        make_dataset(Path(args.speech_commands_folder), Path(args.out_path))
+        split_dataset(Path(args.speech_commands_folder), Path(args.out_path))
 
     elif args.action == 'transform_dataset':
         logger.info('Transforming dataset')
-        transform_dataset(Path(args.dataset))
+        transform_dataset_to_spec(Path(args.dataset))
 
     elif args.action == 'train':
         logger.info('Training model')
