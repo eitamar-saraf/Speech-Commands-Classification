@@ -16,10 +16,10 @@ def transform_loader(loader):
         os.remove(path)
 
 
-def transform_dataset(dataset_path: Path) -> None:
+def transform_dataset_into_spectrogram(dataset_path: Path) -> None:
     for folder in dataset_path.iterdir():
         if folder.is_dir():
-            logger.info(f'Transforming {folder.name} into spectrograms')
+            logger.info(f'Transforming {folder.name} into spectrogram')
 
             dataset_loader = GCommandLoader(folder)
             transform_loader(dataset_loader)

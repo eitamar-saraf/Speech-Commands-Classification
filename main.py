@@ -4,7 +4,7 @@ import sys
 import logging
 
 from preprocess.split_dataset import split_dataset
-from preprocess.transform_dataset import transform_dataset
+from preprocess.transform_dataset import transform_dataset_into_spectrogram
 from train import train_lenet, test
 from utils import get_device
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     elif args.action == 'transform_dataset':
         logger.info('Transforming dataset')
-        transform_dataset_to_spec(Path(args.dataset))
+        transform_dataset_into_spectrogram(Path(args.dataset))
 
     elif args.action == 'train':
         logger.info('Training model')
