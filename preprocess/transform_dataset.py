@@ -3,7 +3,7 @@ from pathlib import Path
 import logging
 import numpy as np
 
-from data_handling.gcommand_loader import GCommandLoader
+from preprocess.gcommand_loader import GCommandLoader
 
 logger = logging.getLogger(__name__)
 
