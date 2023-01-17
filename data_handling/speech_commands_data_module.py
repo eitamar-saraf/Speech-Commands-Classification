@@ -19,10 +19,11 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
         self.validation_dataset_path = Path(args.dataset).joinpath('validation')
         self.test_dataset_path = Path(args.dataset).joinpath('test')
         self.data = {'train': [], 'validation': [], 'test': []}
+        self.classes, self.class_to_idx = self.__find_classes()
 
     def prepare_data(self) -> None:
         logger.info('Preparing data')
-        self.classes, self.class_to_idx = self.__find_classes()
+
         for folder in [self.train_dataset_path, self.validation_dataset_path, self.test_dataset_path]:
             print(f'Preparing {folder.name} data')
             # iterate over all folder

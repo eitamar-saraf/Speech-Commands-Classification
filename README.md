@@ -1,49 +1,67 @@
 # Speech-Commands-Classification
 
-* Classifier for [Google command dataset](https://ai.googleblog.com/2017/08/launching-speech-commands-dataset.html)
-* The Classifier was implemented with PyTorch.
-* I used [LeNet](http://vision.stanford.edu/cs598_spring07/papers/Lecun98.pdf) architecture with some tweaks, like:
-    * [Batch normalization](https://arxiv.org/abs/1502.03167)
-    * [Kaiming initialization](https://arxiv.org/pdf/1502.01852v1.pdf)
-
-## Features
-* Training and testing LeNet.
-* Arrange dataset in an Train, Test, Valid folders for easy loading.
-* Transforming all the dataset to numpy array for easy batch loading in Google Colab.
+Speech Commands Classification is a project that aims to classify the speech commands from the [Speech Commands Dataset](https://ai.googleblog.com/2017/08/launching-speech-commands-dataset.html) using a Convolutional Neural Network (CNN) and a Long Short-Term Memory (LSTM) network.
+In this project we will use PyTorch to build the CNN to classify the speech commands.
 
 ## Installation
-My recommendation is to install with requirements.txt file.
-I removed pytorch from the requirements file, because every pc needs its configuration
-* pip install -r requirements.txt
-* Install [PyTorch](https://pytorch.org/get-started/locally/)
+My recommendation is to install with requirements.txt file. 
+
+```pip install -r requirements.txt```
+
+Some of you probably have different cuda or gpu, so you can install [PyTorch](https://pytorch.org/get-started/locally/) with this tool.
+
+
 
 ## Dataset
 You can download the new version from [here](https://storage.cloud.google.com/download.tensorflow.org/data/speech_commands_v0.02.tar.gz).
+Extract the dataset in the directory you wish to work in.
+Split the dataset into train, validation and test sets using the following command:
 
-Don't forget to extract the dataset.
+```python main.py --action create_dataset --speech_commands_folder <google-command-folder> --out_path <path to save the splitted data>```
 
-To Split the dataset i used [this code](https://github.com/adiyoss/GCommandsPytorch/blob/master/make_dataset.py), i added some improvements in this repo.
-
-* ```python main.py create_dataset --gcommands_fold <google-command-folder> --out_path <path to save the data the new format>```
+You can leave speech_commands_folder and out_path empty to use the default values.
 
 To Transform the dataset from wav files to numpy array files you can use this command:
-* ```python main.py transform_dataset --dataset <path-to-dataset-folder>```
 
+```python main.py transform_dataset --dataset <path-to-dataset-folder>```
+
+You can leave dataset empty to use the default values.
+
+## Architectures
+The architectures of the CNN is the following:
+* Standard [LeNet](http://vision.stanford.edu/cs598_spring07/papers/Lecun98.pdf).
+* LeNet with several modifications. Which includes:
+  * [Batch normalization](https://arxiv.org/abs/1502.03167).
+  * [Dropout](https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf)
+  * [ReLU](https://en.wikipedia.org/wiki/Rectifier_(neural_networks)) activation function.
+* [AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf).
+
+  
 ## Training
-Just run:
- 
-* ```python main.py train --dataset <path-to-dataset-folder>```
+If you want to train the CNN you can use the following command:
+
+```python main.py train --dataset <path-to-dataset-folder> --model_name <'lenet', 'improved_lenet', 'alexnet'>```
+
+There are several parameters you can use to train the CNN. You can see them by using the following command:
+
+```python main.py train --help```
 
 ## Testing
-*  ```python main.py test --test_dataset <path-to-test-folder> --model <path-to-model>``` 
+For testing the CNN you can use the following command:
+
+```python main.py test --test_dataset <path-to-test-folder> --model <path-to-model>``` 
 
 
 ## Results
-| Train acc. | Valid acc. | Test acc.|
-| ------------- | ------------- | ------------- |
-| 99%   | 89% | 88% | 
+| Model          | Test Accuracy | Test Weighted F1 |
+|----------------|---------------|------------------|
+| LeNet          | 81.4%         | 89.3%            | 
+| Improved LeNet | 90%           | 94.6%            | 
+| AlexNet        | 94%           | 96.8%            | 
 
-you can see them in the notebook
+You can see the validation accuracy and F1 for each epoch in the following figures:
 
-## Loss && Validation Accuracy Graph
-![loss](/graphs/loss%20and%20accuracy.png)
+Lenet in gray. Improved LeNet in blue. AlexNet in purple.
+
+![Validation Accuracy](/figures/validation_accuracy.png)
+![Validation F1](/figures/validation_weighted_f1.png)

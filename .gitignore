@@ -1,9 +1,8 @@
 # Project
 data/
-models/
 dataset/
 .idea/
-
+lightning_logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
