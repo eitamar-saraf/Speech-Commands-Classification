@@ -23,7 +23,7 @@ You can leave speech_commands_folder and out_path empty to use the default value
 
 To Transform the dataset from wav files to numpy array files you can use this command:
 
-```python main.py transform_dataset --dataset <path-to-dataset-folder>```
+```python main.py --action transform_dataset --dataset <path-to-dataset-folder>```
 
 You can leave dataset empty to use the default values.
 
@@ -40,16 +40,16 @@ The architectures of the CNN is the following:
 ## Training
 If you want to train the CNN you can use the following command:
 
-```python main.py train --dataset <path-to-dataset-folder> --model_name <'lenet', 'improved_lenet', 'alexnet'>```
+```python main.py --action train --dataset <path-to-dataset-folder> --model_name <'lenet', 'improved_lenet', 'alexnet'>```
 
 There are several parameters you can use to train the CNN. You can see them by using the following command:
 
-```python main.py train --help```
+```python main.py --help```
 
 ## Testing
 For testing the CNN you can use the following command:
 
-```python main.py test --test_dataset <path-to-test-folder> --model <path-to-model>``` 
+```python main.py --action test --dataset <path-to-dataset> --model_checkpoint <path-to-model>``` 
 
 
 ## Results
